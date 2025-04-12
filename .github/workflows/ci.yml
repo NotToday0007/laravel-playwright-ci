@@ -36,14 +36,14 @@ jobs:
 
     - name: Install Laravel dependencies
       run: |
-        cd laravel
+        cd backend
         composer install --no-progress
         cp .env.example .env
         php artisan key:generate
 
     - name: Run Laravel migrations
       run: |
-        cd laravel
+        cd backend
         php artisan migrate --force
 
     - name: Setup Node.js
@@ -53,11 +53,11 @@ jobs:
 
     - name: Install Node dependencies & Playwright
       run: |
-        cd playwright-tests
+        cd playwright
         npm ci
         npx playwright install --with-deps
 
     - name: Run Playwright tests
       run: |
-        cd playwright-tests
+        cd playwright
         npx playwright test
