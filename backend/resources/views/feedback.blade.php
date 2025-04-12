@@ -27,7 +27,7 @@
         {{-- <label for="email1">Email</label>
         <input type="email1" class="form-control" id="email1" name="email1" required> --}}
         <label for="email">Email</label>
-        <input type="email" class="form-control" id="email1" name="email1" required>
+        <input type="email" class="form-control" id="email" name="email" required>
       </div>
 
       <div class="form-group">
