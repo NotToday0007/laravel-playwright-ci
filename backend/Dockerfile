@@ -18,8 +18,8 @@ COPY . .
 # Install Composer globally
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set correct permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+# ✅ Create required folders and set correct permissions
+RUN mkdir -p storage bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache
 
 # Install dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
