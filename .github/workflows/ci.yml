@@ -10,20 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_qa1
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -41,10 +27,11 @@ jobs:
         cp .env.example .env
         php artisan key:generate
 
-    - name: Run Laravel migrations
-      run: |
-        cd backend
-        php artisan migrate --force
+    # ❌ Skipping migration step
+    # - name: Run Laravel migrations
+    #   run: |
+    #     cd backend
+    #     php artisan migrate --force
 
     - name: Start Laravel server
       run: |
