@@ -10,20 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_qa1
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -45,6 +31,13 @@ jobs:
       run: |
         cd backend
         php artisan migrate --force
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: sql12.freesqldatabase.com
+        DB_PORT: 3306
+        DB_DATABASE: sql12774030
+        DB_USERNAME: sql12774030
+        DB_PASSWORD: JmgdpTIFmE
 
     - name: Start Laravel server
       run: |
@@ -52,7 +45,7 @@ jobs:
         php artisan serve --host=0.0.0.0 --port=8000 &
       env:
         APP_ENV: testing
-        
+
     - name: Wait for Laravel server to boot
       run: sleep 5
 
