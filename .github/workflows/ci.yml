@@ -11,15 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout the code from the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Set up PHP environment
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: 8.2
         extensions: pdo, pdo_mysql, mbstring, bcmath
 
+    # Install Laravel dependencies
     - name: Install Laravel dependencies
       run: |
         cd backend
@@ -27,6 +30,7 @@ jobs:
         cp .env.example .env
         php artisan key:generate
 
+    # Configure .env with remote DB details
     - name: Configure .env with remote DB
       run: |
         cd backend
@@ -37,12 +41,36 @@ jobs:
         echo "DB_USERNAME=sql12775461" >> .env
         echo "DB_PASSWORD=HLv5Vc77pJ" >> .env
 
+    # Run Laravel migrations (force will run even in production)
     - name: Run Laravel migrations
       run: |
         cd backend
         php artisan migrate --force
 
+    # Build Docker image and run the container
+    - name: Build Docker image
+      run: |
+        docker build -f backend/Dockerfile -t your-image-name ./backend
+
+    # Run Docker container (adjust ports if necessary)
+    - name: Run Docker container
+      run: |
+        docker run -d -p 8000:80 your-image-name
+
+    # Start Laravel server (if you want to serve using php artisan serve)
     - name: Start Laravel server
       run: |
         cd backend
         php artisan serve --host=0.0.0.0 --port=8000 &
+        sleep 10  # Ensure server has time to start
+
+    # Run Laravel tests (if any are available)
+    - name: Run Laravel tests
+      run: |
+        cd backend
+        php artisan test
+
+    # Optionally, stop the Docker container after tests
+    - name: Stop Docker container
+      run: |
+        docker ps -q | xargs docker stop
