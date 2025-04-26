@@ -1,7 +1,7 @@
 # Use official PHP image with Apache
 FROM php:8.2-apache
 
-# Install required system packages and PHP extensions
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git unzip zip libzip-dev libpng-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_mysql zip mbstring
@@ -24,17 +24,14 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /e
 # Copy Composer from the official Composer image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Install Laravel dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
 # Ensure necessary folders exist and set correct permissions
 RUN mkdir -p storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
-# Install Composer dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-
-# Set environment variable
-ENV APP_ENV=production
-
-# Expose port 80 (optional, but good practice)
+# Expose port
 EXPOSE 80
 
 # Start Apache server

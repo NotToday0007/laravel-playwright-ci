@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_URL: http://localhost
+      DB_CONNECTION: mysql
+      DB_HOST: sql12.freesqldatabase.com
+      DB_PORT: 3306
+      DB_DATABASE: sql12774030
+      DB_USERNAME: sql12774030
+      DB_PASSWORD: JmgdpTIFmE
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
