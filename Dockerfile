@@ -20,27 +20,23 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
 
-# Copy project files (✅ Laravel is in root, so no `./backend`)
-COPY . /var/www/html
-
-# Set working directory
+# Set working directory to Laravel project
 WORKDIR /var/www/html
 
-# Copy Composer from build stage
+# Copy only the backend folder (Laravel app) into container
+COPY ./backend/ ./
+
+# Copy Composer from the build stage
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# Install dependencies
+# Install Laravel dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Laravel setup
-RUN cp .env.example .env && \
-    php artisan key:generate
+# Set permissions for Laravel folders
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Expose port
+# Expose Laravel port
 EXPOSE 8000
 
-# Start Laravel server
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Start Laravel development server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
