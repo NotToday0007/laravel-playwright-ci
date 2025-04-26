@@ -51,7 +51,7 @@ jobs:
     # Build Docker image and run the container
     - name: Build Docker image
       run: |
-       docker build -t your-image-name ./
+       docker build -t your-image-name .
 
 
     # Run Docker container (adjust ports if necessary)

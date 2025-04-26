@@ -1,7 +1,10 @@
-# Use official PHP image
+# Stage 1: Composer
+FROM composer:latest AS composer
+
+# Stage 2: PHP with Laravel
 FROM php:8.2-fpm
 
-# Install system dependencies first
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -17,23 +20,27 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
 
-# Copy project files
-COPY ./backend /var/www/html
+# Copy project files (✅ Laravel is in root, so no `./backend`)
+COPY . /var/www/html
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copy Composer from build stage
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# Install Laravel dependencies
+# Install dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Set permissions (optional)
+# Laravel setup
+RUN cp .env.example .env && \
+    php artisan key:generate
+
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 8000
+# Expose port
 EXPOSE 8000
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Start Laravel server
+CMD php artisan serve --host=0.0.0.0 --port=8000
